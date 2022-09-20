@@ -14,8 +14,8 @@ public class Matrix {
 
     public Matrix(Float[] data, Integer numRows, Integer numCols, Float defaultValue){
         int default_size = 1;
-        _numRows = numRows != null ? numRows: default_size;
-        _numCols = numCols != null ? numCols: default_size;
+        _numRows = numRows != null && numRows > 0 ? numRows: default_size;
+        _numCols = numCols != null && numCols > 0 ? numCols: default_size;
         VALUE_FOR_EMPTY_CELLS = defaultValue != null ? defaultValue : DEFAULT_VALUE;
         createData(data);
     }
@@ -47,7 +47,7 @@ public class Matrix {
      * @throws    IllegalArgumentException  если у матриц разное свойство {@code shape}
      */
     public Matrix add(Matrix other){
-        if (other.shape() != shape()){
+        if (other.numRows() != _numRows || other.numCols() != _numCols){
             throw new IllegalArgumentException("разная размерность у матриц!");
         }
 
@@ -56,7 +56,7 @@ public class Matrix {
         for (MatrixElement el : _data){
             int row = el.Row;
             int col = el.Col;
-            Float newValue = other.get(row, col).Value * el.Value;
+            Float newValue = other.get(row, col).Value + el.Value;
             MatrixElement newElement = new MatrixElement(row, col, newValue);
             newMatrix.set(row, col, newElement);
         }
@@ -67,8 +67,8 @@ public class Matrix {
         if (_matrixVisualization != null){
             return _matrixVisualization;
         }
-        List<String> header = new ArrayList<>();
-        header.add("");
+        ArrayList<String> header = new ArrayList<>();
+        header.add(" ");
         for (int i = 0; i < _numCols; i++){
             header.add(Integer.toString(i));
         }
@@ -83,10 +83,6 @@ public class Matrix {
 
     public void set(int row, int col, MatrixElement element){
         _data.set(_dataMap.get(getCode(row, col)), element);
-    }
-
-    public Vector<Integer> shape() {
-        return new Vector<>(_numRows, _numCols);
     }
 
     public int numRows(){

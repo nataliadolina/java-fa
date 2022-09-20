@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -6,24 +7,27 @@ import java.util.UUID;
 
 public class ListFormatter {
     private final int PADDING_SIZE = 2;
+    private final int CELL_LENGTH = 5;
+
+    private final String CELL_LENGTH_STR = String.valueOf(CELL_LENGTH);
     private final String NEW_LINE = "\n";
     private final String TABLE_JOINT_SYMBOL = "+";
     private final String TABLE_V_SPLIT_SYMBOL = "|";
     private final String TABLE_H_SPLIT_SYMBOL = "-";
 
-    public String generateTable(int nRows, int nCols, List<String> headersList, Matrix matrix, int... overRiddenHeaderHeight) {
+    public String generateTable(int nRows, int nCols, ArrayList<String> headersList, Matrix matrix, int... overRiddenHeaderHeight) {
         StringBuilder stringBuilder = new StringBuilder();
 
         int rowHeight = overRiddenHeaderHeight.length > 0 ? overRiddenHeaderHeight[0] : 1;
 
         stringBuilder.append(NEW_LINE);
         stringBuilder.append(NEW_LINE);
-        createRowLine(stringBuilder, nRows + 1, nCols);
+        createRowLine(stringBuilder, headersList.size(), nCols);
         stringBuilder.append(NEW_LINE);
 
 
         for (int headerIndex = 0; headerIndex < headersList.size(); headerIndex++) {
-            fillCell(stringBuilder, String.format("%4s", headersList.get(headerIndex)), headerIndex, nCols);
+            fillCell(stringBuilder, headersList.get(headerIndex), nCols);
         }
 
         stringBuilder.append(NEW_LINE);
@@ -35,9 +39,9 @@ public class ListFormatter {
                 stringBuilder.append(NEW_LINE);
             }
 
-            fillCell(stringBuilder, Integer.toString(i), 0, nCols);
+            fillCell(stringBuilder, i, nCols);
             for (int cellIndex = 0; cellIndex < nCols - 1; cellIndex++) {
-                fillCell(stringBuilder, String.format("%4s", matrix.get(i, cellIndex).Value), cellIndex, nCols);
+                fillCell(stringBuilder, matrix.get(i, cellIndex).Value, nCols);
             }
         }
 
@@ -57,12 +61,12 @@ public class ListFormatter {
 
     private void createRowLine(StringBuilder stringBuilder, int headersListSize, int nCols) {
         for (int i = 0; i < headersListSize; i++) {
-            if (i == 0) {
-                stringBuilder.append(TABLE_JOINT_SYMBOL);
-            }
-
-            for (int j = 0; j < nCols + PADDING_SIZE * 2; j++) {
-                stringBuilder.append(TABLE_H_SPLIT_SYMBOL);
+            for (int j = 0; j < CELL_LENGTH + PADDING_SIZE * 2; j++) {
+                if (i == 0 && j == 0){
+                    stringBuilder.append(TABLE_JOINT_SYMBOL);
+                } else {
+                    stringBuilder.append(TABLE_H_SPLIT_SYMBOL);
+                }
             }
             stringBuilder.append(TABLE_JOINT_SYMBOL);
         }
@@ -80,15 +84,13 @@ public class ListFormatter {
         return cellPaddingSize;
     }
 
-    private void fillCell(StringBuilder stringBuilder, String cell, int cellIndex, int nCols) {
-
-        int cellPaddingSize = getOptimumCellPadding(cell.length(), nCols, PADDING_SIZE);
+    private void fillCell(StringBuilder stringBuilder, Object cell, int nCols) {
+        String cell1 = String.valueOf(cell);
+        String cell2 = cell1.length() > CELL_LENGTH ? String.valueOf(cell).substring(0, CELL_LENGTH) : cell1;
+        String cellStr = String.format("%" + CELL_LENGTH_STR + "s", cell2);
+        int cellPaddingSize = getOptimumCellPadding(cellStr.length(), nCols, PADDING_SIZE);
         fillSpace(stringBuilder, cellPaddingSize);
-        stringBuilder.append(cell);
-        if (cell.length() % 2 != 0) {
-            stringBuilder.append(" ");
-        }
-
+        stringBuilder.append(cellStr);
         fillSpace(stringBuilder, cellPaddingSize);
 
         stringBuilder.append(TABLE_V_SPLIT_SYMBOL);
