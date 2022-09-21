@@ -115,14 +115,17 @@ public class Matrix {
                     "{@code other} {@code _numRows}");
         }
 
-        Matrix newMatrix = new Matrix(new Float[]{0f}, _numRows, other.numRows(), null);
+        int otherCols = other.numCols();
+        Matrix newMatrix = new Matrix(new Float[]{0f}, _numRows, otherCols, null);
         for (int i = 0; i < _numRows; i++){
-            float newValue = 0;
-            for (int j = 0; j < _numCols; j++){
-                newValue += get(i, j).Value * other.get(j, i).Value;
+            for (int j=0; j < otherCols; j++){
+                float value = 0;
+                for (int otherI = 0; otherI < otherRows; otherI ++){
+                    value += get(i, otherI).Value * other.get(otherI, j).Value;
+                }
+                MatrixElement newElement = new MatrixElement(i, j, value);
+                newMatrix.set(newElement);
             }
-            MatrixElement newElement = new MatrixElement(i, j, newValue);
-            newMatrix.set()
         }
         return newMatrix;
     }
