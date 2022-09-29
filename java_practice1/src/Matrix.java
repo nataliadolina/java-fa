@@ -205,7 +205,8 @@ public class Matrix{
         return newMatrix;
     }
 
-    public String VisualString(){
+    @Override
+    public String toString(){
         if (_matrixVisualization != null){
             return _matrixVisualization;
         }
