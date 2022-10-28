@@ -1,3 +1,5 @@
+package utils;
+
 import java.nio.charset.StandardCharsets;
 
 public class StringExtensions {
